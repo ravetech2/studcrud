@@ -3,5 +3,5 @@
 require_once __DIR__ . '/../includes/functions.php';
 $_SESSION = [];
 session_destroy();
-header('Location: ../index.php');
+header('Location: ' . url_for('index.php'));
 exit;

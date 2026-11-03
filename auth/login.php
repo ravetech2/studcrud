@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['role'] = $user['role'];
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['fullname'] = $user['fullname'];
-    header('Location: ' . ($user['role'] === 'admin' ? '../admin/dashboard.php' : '../student/dashboard.php'));
+    header('Location: ' . url_for($user['role'] === 'admin' ? 'admin/dashboard.php' : 'student/dashboard.php'));
     exit;
   } else
     $error = 'Invalid username/student number or password.';
@@ -35,5 +35,5 @@ page_header('Login'); ?>
   <form method="post"><label>Username or Student Number<input name="username" required
         autofocus></label><label>Password<input type="password" name="password" required></label><button
       class="btn full">Login</button></form>
-  <p class="muted center">New student? <a href="register.php">Register here</a></p>
+  <p class="muted center">Need an account? Please contact your school administrator.</p>
 </div><?php page_footer(); ?>

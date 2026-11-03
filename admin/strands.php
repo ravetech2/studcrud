@@ -46,7 +46,8 @@ notice(); ?>
                 <tr>
                     <td><?= e($r['strand_code']) ?></td>
                     <td><?= e($r['strand_name']) ?></td>
-                    <td><a class="danger" data-confirm="Delete this strand?" href="?delete=<?= $r['strand_id'] ?>">Delete</a>
+                    <td><a class="danger" data-confirm="Delete this strand?"
+                            href="?delete=<?= $r['strand_id'] ?>">Delete</a>
                     </td>
                 </tr><?php endforeach; ?>
         </table>
