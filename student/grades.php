@@ -1,3 +1,33 @@
 <?php
-require_once __DIR__.'/../includes/functions.php';require_role('student');
-$q=$pdo->prepare("SELECT sub.subject_code,sub.subject_name,en.school_year,en.semester,g.grading_period,g.grade,g.remarks FROM student_subjects en JOIN subjects sub ON sub.subject_id=en.subject_id LEFT JOIN grades g ON g.enrollment_id=en.enrollment_id WHERE en.student_id=? ORDER BY en.school_year DESC,sub.subject_name,g.grading_period");$q->execute([$_SESSION['user_id']]);$rows=$q->fetchAll();page_header('My Grades');?><div class="page-heading"><h1>My Grades</h1><p class="muted">Your recorded quarterly grades.</p></div><div class="panel"><div class="table-wrap"><table><tr><th>Subject</th><th>School Year</th><th>Grading Period</th><th>Grade</th><th>Remarks</th></tr><?php foreach($rows as $r):?><tr><td><?=e($r['subject_code'].' - '.$r['subject_name'])?></td><td><?=e($r['school_year'])?></td><td><?=e($r['grading_period']??'Not yet recorded')?></td><td><?=e($r['grade']??'—')?></td><td><?=e($r['remarks']??'—')?></td></tr><?php endforeach;?></table></div><?php if(!$rows)echo '<p class="muted">No grades are available yet.</p>';?></div><?php page_footer();?>
+/** Displays the signed-in student's recorded quarterly grades. */
+require_once __DIR__ . '/../includes/functions.php';
+require_role('student');
+$q = $pdo->prepare("SELECT sub.subject_code,sub.subject_name,en.school_year,en.semester,g.grading_period,g.grade,g.remarks FROM student_subjects en JOIN subjects sub ON sub.subject_id=en.subject_id LEFT JOIN grades g ON g.enrollment_id=en.enrollment_id WHERE en.student_id=? ORDER BY en.school_year DESC,sub.subject_name,g.grading_period");
+$q->execute([$_SESSION['user_id']]);
+$rows = $q->fetchAll();
+page_header('My Grades'); ?>
+<div class="page-heading">
+    <h1>My Grades</h1>
+    <p class="muted">Your recorded quarterly grades.</p>
+</div>
+<div class="panel">
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Subject</th>
+                <th>School Year</th>
+                <th>Grading Period</th>
+                <th>Grade</th>
+                <th>Remarks</th>
+            </tr><?php foreach ($rows as $r): ?>
+                <tr>
+                    <td><?= e($r['subject_code'] . ' - ' . $r['subject_name']) ?></td>
+                    <td><?= e($r['school_year']) ?></td>
+                    <td><?= e($r['grading_period'] ?? 'Not yet recorded') ?></td>
+                    <td><?= e($r['grade'] ?? '—') ?></td>
+                    <td><?= e($r['remarks'] ?? '—') ?></td>
+                </tr><?php endforeach; ?>
+        </table>
+    </div><?php if (!$rows)
+        echo '<p class="muted">No grades are available yet.</p>'; ?>
+</div><?php page_footer(); ?>

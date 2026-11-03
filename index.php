@@ -1,4 +1,5 @@
 <?php
+/** Public landing page; sends signed-in users to their role dashboard. */
 require_once __DIR__.'/includes/functions.php';
 if (logged_in()) redirect_home();
 page_header('Welcome');

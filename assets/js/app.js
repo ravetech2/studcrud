@@ -1,1 +1,5 @@
-document.addEventListener('click',function(event){const link=event.target.closest('[data-confirm]');if(link&&!confirm(link.dataset.confirm))event.preventDefault();});
+// Shared client-side behavior, including confirmation prompts for delete actions.
+document.addEventListener("click", function (event) {
+  const link = event.target.closest("[data-confirm]");
+  if (link && !confirm(link.dataset.confirm)) event.preventDefault();
+});

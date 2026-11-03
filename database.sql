@@ -1,3 +1,4 @@
+-- Senior High School Management System database schema and starter records.
 CREATE DATABASE IF NOT EXISTS senior_high_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE senior_high_db;
 

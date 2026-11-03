@@ -1,5 +1,56 @@
 <?php
-require_once __DIR__.'/../includes/functions.php';require_role('admin');
-if(isset($_GET['delete']) && (int)$_GET['delete']!==(int)$_SESSION['user_id']){ $q=$pdo->prepare('DELETE FROM admin WHERE admin_id=?');$q->execute([(int)$_GET['delete']]);$_SESSION['flash']='Administrator deleted.';header('Location: manage-admin.php');exit;}
-if($_SERVER['REQUEST_METHOD']==='POST'){try{$q=$pdo->prepare('INSERT INTO admin(username,password,fullname) VALUES(?,?,?)');$q->execute([trim($_POST['username']),password_hash($_POST['password'],PASSWORD_DEFAULT),trim($_POST['fullname'])]);$_SESSION['flash']='Administrator added.';}catch(PDOException $e){$_SESSION['flash']='Could not add administrator. Username may already exist.';}header('Location: manage-admin.php');exit;}
-$rows=$pdo->query('SELECT admin_id,username,fullname,created_at FROM admin ORDER BY admin_id')->fetchAll();page_header('Manage Administrators');notice();?><div class="page-heading"><h1>Administrators</h1></div><div class="panel"><h2>Add administrator</h2><form method="post" class="form-grid"><label>Full Name<input name="fullname" required></label><label>Username<input name="username" required></label><label>Password (8+ characters)<input type="password" name="password" minlength="8" required></label><button class="btn">Add admin</button></form></div><div class="panel"><div class="table-wrap"><table><tr><th>Name</th><th>Username</th><th>Created</th><th>Action</th></tr><?php foreach($rows as $r):?><tr><td><?=e($r['fullname'])?></td><td><?=e($r['username'])?></td><td><?=e($r['created_at'])?></td><td><?php if($r['admin_id']!=$_SESSION['user_id'])echo '<a class="danger" data-confirm="Delete administrator?" href="?delete='.$r['admin_id'].'">Delete</a>';else echo 'Current account';?></td></tr><?php endforeach;?></table></div></div><?php page_footer();?>
+/** Allows administrators to add or remove other administrator accounts. */
+require_once __DIR__ . '/../includes/functions.php';
+require_role('admin');
+if (isset($_GET['delete']) && (int) $_GET['delete'] !== (int) $_SESSION['user_id']) {
+    $q = $pdo->prepare('DELETE FROM admin WHERE admin_id=?');
+    $q->execute([(int) $_GET['delete']]);
+    $_SESSION['flash'] = 'Administrator deleted.';
+    header('Location: manage-admin.php');
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $q = $pdo->prepare('INSERT INTO admin(username,password,fullname) VALUES(?,?,?)');
+        $q->execute([trim($_POST['username']), password_hash($_POST['password'], PASSWORD_DEFAULT), trim($_POST['fullname'])]);
+        $_SESSION['flash'] = 'Administrator added.';
+    } catch (PDOException $e) {
+        $_SESSION['flash'] = 'Could not add administrator. Username may already exist.';
+    }
+    header('Location: manage-admin.php');
+    exit;
+}
+$rows = $pdo->query('SELECT admin_id,username,fullname,created_at FROM admin ORDER BY admin_id')->fetchAll();
+page_header('Manage Administrators');
+notice(); ?>
+<div class="page-heading">
+    <h1>Administrators</h1>
+</div>
+<div class="panel">
+    <h2>Add administrator</h2>
+    <form method="post" class="form-grid"><label>Full Name<input name="fullname" required></label><label>Username<input
+                name="username" required></label><label>Password (8+ characters)<input type="password" name="password"
+                minlength="8" required></label><button class="btn">Add admin</button></form>
+</div>
+<div class="panel">
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Created</th>
+                <th>Action</th>
+            </tr><?php foreach ($rows as $r): ?>
+                <tr>
+                    <td><?= e($r['fullname']) ?></td>
+                    <td><?= e($r['username']) ?></td>
+                    <td><?= e($r['created_at']) ?></td>
+                    <td><?php if ($r['admin_id'] != $_SESSION['user_id'])
+                        echo '<a class="danger" data-confirm="Delete administrator?" href="?delete=' . $r['admin_id'] . '">Delete</a>';
+                    else
+                        echo 'Current account'; ?>
+                    </td>
+                </tr><?php endforeach; ?>
+        </table>
+    </div>
+</div><?php page_footer(); ?>

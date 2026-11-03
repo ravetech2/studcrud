@@ -1,6 +1,78 @@
 <?php
-require_once __DIR__.'/../includes/functions.php';require_role('admin');
-if(isset($_GET['delete'])){try{$q=$pdo->prepare('DELETE FROM subjects WHERE subject_id=?');$q->execute([(int)$_GET['delete']]);$_SESSION['flash']='Subject deleted.';}catch(PDOException $e){$_SESSION['flash']='Cannot delete a subject already assigned to students.';}header('Location: subjects.php');exit;}
-if($_SERVER['REQUEST_METHOD']==='POST'){try{$q=$pdo->prepare('INSERT INTO subjects(subject_code,subject_name,description,units,year_level_id,strand_id,semester) VALUES(?,?,?,?,?,?,?)');$q->execute([trim($_POST['subject_code']),trim($_POST['subject_name']),$_POST['description'],(float)$_POST['units'],(int)$_POST['year_level_id'],$_POST['strand_id']?:null,$_POST['semester']]);$_SESSION['flash']='Subject added.';}catch(PDOException $e){$_SESSION['flash']='Could not add subject. Check the subject code.';}header('Location: subjects.php');exit;}
-$years=$pdo->query('SELECT * FROM year_levels')->fetchAll();$strands=$pdo->query('SELECT * FROM strands')->fetchAll();$rows=$pdo->query('SELECT s.*,y.year_level_name,t.strand_code FROM subjects s JOIN year_levels y ON y.year_level_id=s.year_level_id LEFT JOIN strands t ON t.strand_id=s.strand_id ORDER BY s.subject_id DESC')->fetchAll();
-page_header('Subjects');notice();?><div class="page-heading"><div><p class="eyebrow">ACADEMICS</p><h1>Subjects</h1></div></div><div class="panel"><h2>Add subject</h2><form method="post" class="form-grid"><label>Subject Code<input name="subject_code" required></label><label>Subject Name<input name="subject_name" required></label><label>Units<input name="units" type="number" min="0" step=".5" value="3"></label><label>Year Level<select name="year_level_id"><?php foreach($years as $v)echo '<option value="'.$v['year_level_id'].'">'.e($v['year_level_name']).'</option>';?></select></label><label>Strand<select name="strand_id"><option value="">All strands</option><?php foreach($strands as $v)echo '<option value="'.$v['strand_id'].'">'.e($v['strand_code']).'</option>';?></select></label><label>Semester<select name="semester"><option>1st Semester</option><option>2nd Semester</option></select></label><label class="span-2">Description<input name="description"></label><button class="btn">Save subject</button></form></div><div class="panel"><h2>Subject list</h2><div class="table-wrap"><table><tr><th>Code</th><th>Subject</th><th>Year</th><th>Strand</th><th>Semester</th><th></th></tr><?php foreach($rows as $r):?><tr><td><?=e($r['subject_code'])?></td><td><?=e($r['subject_name'])?></td><td><?=e($r['year_level_name'])?></td><td><?=e($r['strand_code']??'All')?></td><td><?=e($r['semester'])?></td><td><a class="danger" data-confirm="Delete this subject?" href="?delete=<?=$r['subject_id']?>">Delete</a></td></tr><?php endforeach;?></table></div></div><?php page_footer();?>
+/** Allows administrators to add and remove Senior High School subjects. */
+require_once __DIR__ . '/../includes/functions.php';
+require_role('admin');
+if (isset($_GET['delete'])) {
+    try {
+        $q = $pdo->prepare('DELETE FROM subjects WHERE subject_id=?');
+        $q->execute([(int) $_GET['delete']]);
+        $_SESSION['flash'] = 'Subject deleted.';
+    } catch (PDOException $e) {
+        $_SESSION['flash'] = 'Cannot delete a subject already assigned to students.';
+    }
+    header('Location: subjects.php');
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $q = $pdo->prepare('INSERT INTO subjects(subject_code,subject_name,description,units,year_level_id,strand_id,semester) VALUES(?,?,?,?,?,?,?)');
+        $q->execute([trim($_POST['subject_code']), trim($_POST['subject_name']), $_POST['description'], (float) $_POST['units'], (int) $_POST['year_level_id'], $_POST['strand_id'] ?: null, $_POST['semester']]);
+        $_SESSION['flash'] = 'Subject added.';
+    } catch (PDOException $e) {
+        $_SESSION['flash'] = 'Could not add subject. Check the subject code.';
+    }
+    header('Location: subjects.php');
+    exit;
+}
+$years = $pdo->query('SELECT * FROM year_levels')->fetchAll();
+$strands = $pdo->query('SELECT * FROM strands')->fetchAll();
+$rows = $pdo->query('SELECT s.*,y.year_level_name,t.strand_code FROM subjects s JOIN year_levels y ON y.year_level_id=s.year_level_id LEFT JOIN strands t ON t.strand_id=s.strand_id ORDER BY s.subject_id DESC')->fetchAll();
+page_header('Subjects');
+notice(); ?>
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">ACADEMICS</p>
+        <h1>Subjects</h1>
+    </div>
+</div>
+<div class="panel">
+    <h2>Add subject</h2>
+    <form method="post" class="form-grid"><label>Subject Code<input name="subject_code" required></label><label>Subject
+            Name<input name="subject_name" required></label><label>Units<input name="units" type="number" min="0"
+                step=".5" value="3"></label><label>Year Level<select
+                name="year_level_id"><?php foreach ($years as $v)
+                    echo '<option value="' . $v['year_level_id'] . '">' . e($v['year_level_name']) . '</option>'; ?></select></label><label>Strand<select
+                name="strand_id">
+                <option value="">All strands</option>
+                <?php foreach ($strands as $v)
+                    echo '<option value="' . $v['strand_id'] . '">' . e($v['strand_code']) . '</option>'; ?>
+            </select></label><label>Semester<select name="semester">
+                <option>1st Semester</option>
+                <option>2nd Semester</option>
+            </select></label><label class="span-2">Description<input name="description"></label><button class="btn">Save
+            subject</button></form>
+</div>
+<div class="panel">
+    <h2>Subject list</h2>
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Code</th>
+                <th>Subject</th>
+                <th>Year</th>
+                <th>Strand</th>
+                <th>Semester</th>
+                <th></th>
+            </tr><?php foreach ($rows as $r): ?>
+                <tr>
+                    <td><?= e($r['subject_code']) ?></td>
+                    <td><?= e($r['subject_name']) ?></td>
+                    <td><?= e($r['year_level_name']) ?></td>
+                    <td><?= e($r['strand_code'] ?? 'All') ?></td>
+                    <td><?= e($r['semester']) ?></td>
+                    <td><a class="danger" data-confirm="Delete this subject?"
+                            href="?delete=<?= $r['subject_id'] ?>">Delete</a></td>
+                </tr><?php endforeach; ?>
+        </table>
+    </div>
+</div><?php page_footer(); ?>

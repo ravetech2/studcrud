@@ -1,5 +1,33 @@
 <?php
-require_once __DIR__.'/../includes/functions.php';require_role('student');
-$q=$pdo->prepare('SELECT s.*,y.year_level_name,t.strand_code,t.strand_name FROM students s JOIN year_levels y ON y.year_level_id=s.year_level_id JOIN strands t ON t.strand_id=s.strand_id WHERE student_id=?');$q->execute([$_SESSION['user_id']]);$s=$q->fetch();
-$q=$pdo->prepare('SELECT COUNT(*) FROM student_subjects WHERE student_id=?');$q->execute([$_SESSION['user_id']]);$subjects=(int)$q->fetchColumn();
-page_header('Student Dashboard');?><div class="page-heading"><div><p class="eyebrow">STUDENT PORTAL</p><h1>Hello, <?=e($_SESSION['fullname'])?>!</h1><p class="muted">Here is your academic overview.</p></div></div><div class="stats"><div class="stat-card"><span>Student Number</span><strong class="small-stat"><?=e($s['student_number'])?></strong></div><div class="stat-card"><span>Year Level</span><strong class="small-stat"><?=e($s['year_level_name'])?></strong></div><div class="stat-card"><span>Strand</span><strong class="small-stat"><?=e($s['strand_code'])?></strong></div><div class="stat-card"><span>Enrolled Subjects</span><strong><?=$subjects?></strong></div></div><div class="panel"><h2>Student information</h2><p><b>Full name:</b> <?=e($s['firstname'].' '.$s['middlename'].' '.$s['lastname'])?></p><p><b>Strand:</b> <?=e($s['strand_name'])?></p><p><b>Enrollment status:</b> <span class="pill"><?=e($s['enrollment_status'])?></span></p><p class="muted">Use the navigation above to view your profile, subjects, and grades.</p></div><?php page_footer();?>
+/** Shows the signed-in student's academic overview. */
+require_once __DIR__ . '/../includes/functions.php';
+require_role('student');
+$q = $pdo->prepare('SELECT s.*,y.year_level_name,t.strand_code,t.strand_name FROM students s JOIN year_levels y ON y.year_level_id=s.year_level_id JOIN strands t ON t.strand_id=s.strand_id WHERE student_id=?');
+$q->execute([$_SESSION['user_id']]);
+$s = $q->fetch();
+$q = $pdo->prepare('SELECT COUNT(*) FROM student_subjects WHERE student_id=?');
+$q->execute([$_SESSION['user_id']]);
+$subjects = (int) $q->fetchColumn();
+page_header('Student Dashboard'); ?>
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>Hello, <?= e($_SESSION['fullname']) ?>!</h1>
+        <p class="muted">Here is your academic overview.</p>
+    </div>
+</div>
+<div class="stats">
+    <div class="stat-card"><span>Student Number</span><strong class="small-stat"><?= e($s['student_number']) ?></strong>
+    </div>
+    <div class="stat-card"><span>Year Level</span><strong class="small-stat"><?= e($s['year_level_name']) ?></strong>
+    </div>
+    <div class="stat-card"><span>Strand</span><strong class="small-stat"><?= e($s['strand_code']) ?></strong></div>
+    <div class="stat-card"><span>Enrolled Subjects</span><strong><?= $subjects ?></strong></div>
+</div>
+<div class="panel">
+    <h2>Student information</h2>
+    <p><b>Full name:</b> <?= e($s['firstname'] . ' ' . $s['middlename'] . ' ' . $s['lastname']) ?></p>
+    <p><b>Strand:</b> <?= e($s['strand_name']) ?></p>
+    <p><b>Enrollment status:</b> <span class="pill"><?= e($s['enrollment_status']) ?></span></p>
+    <p class="muted">Use the navigation above to view your profile, subjects, and grades.</p>
+</div><?php page_footer(); ?>

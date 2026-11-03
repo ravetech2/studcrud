@@ -1,5 +1,53 @@
 <?php
-require_once __DIR__.'/../includes/functions.php';require_role('admin');
-if(isset($_GET['delete'])){try{$q=$pdo->prepare('DELETE FROM year_levels WHERE year_level_id=?');$q->execute([(int)$_GET['delete']]);$_SESSION['flash']='Year level deleted.';}catch(PDOException $e){$_SESSION['flash']='Cannot delete a year level currently in use.';}header('Location: year-levels.php');exit;}
-if($_SERVER['REQUEST_METHOD']==='POST'){try{$q=$pdo->prepare('INSERT INTO year_levels(year_level_name) VALUES(?)');$q->execute([trim($_POST['year_level_name'])]);$_SESSION['flash']='Year level added.';}catch(PDOException $e){$_SESSION['flash']='Year level already exists or is invalid.';}header('Location: year-levels.php');exit;}
-$rows=$pdo->query('SELECT * FROM year_levels ORDER BY year_level_id')->fetchAll();page_header('Year Levels');notice();?><div class="page-heading"><h1>Year Levels</h1></div><div class="panel"><form method="post" class="inline-form"><label>Year level name<input name="year_level_name" placeholder="Grade 11" required></label><button class="btn">Add year level</button></form></div><div class="panel"><div class="table-wrap"><table><tr><th>ID</th><th>Year Level</th><th>Action</th></tr><?php foreach($rows as $r):?><tr><td><?=$r['year_level_id']?></td><td><?=e($r['year_level_name'])?></td><td><a class="danger" data-confirm="Delete this year level?" href="?delete=<?=$r['year_level_id']?>">Delete</a></td></tr><?php endforeach;?></table></div></div><?php page_footer();?>
+/** Manages available year levels such as Grade 11 and Grade 12. */
+require_once __DIR__ . '/../includes/functions.php';
+require_role('admin');
+if (isset($_GET['delete'])) {
+  try {
+    $q = $pdo->prepare('DELETE FROM year_levels WHERE year_level_id=?');
+    $q->execute([(int) $_GET['delete']]);
+    $_SESSION['flash'] = 'Year level deleted.';
+  } catch (PDOException $e) {
+    $_SESSION['flash'] = 'Cannot delete a year level currently in use.';
+  }
+  header('Location: year-levels.php');
+  exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  try {
+    $q = $pdo->prepare('INSERT INTO year_levels(year_level_name) VALUES(?)');
+    $q->execute([trim($_POST['year_level_name'])]);
+    $_SESSION['flash'] = 'Year level added.';
+  } catch (PDOException $e) {
+    $_SESSION['flash'] = 'Year level already exists or is invalid.';
+  }
+  header('Location: year-levels.php');
+  exit;
+}
+$rows = $pdo->query('SELECT * FROM year_levels ORDER BY year_level_id')->fetchAll();
+page_header('Year Levels');
+notice(); ?>
+<div class="page-heading">
+  <h1>Year Levels</h1>
+</div>
+<div class="panel">
+  <form method="post" class="inline-form"><label>Year level name<input name="year_level_name" placeholder="Grade 11"
+        required></label><button class="btn">Add year level</button></form>
+</div>
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Year Level</th>
+        <th>Action</th>
+      </tr><?php foreach ($rows as $r): ?>
+        <tr>
+          <td><?= $r['year_level_id'] ?></td>
+          <td><?= e($r['year_level_name']) ?></td>
+          <td><a class="danger" data-confirm="Delete this year level?" href="?delete=<?= $r['year_level_id'] ?>">Delete</a>
+          </td>
+        </tr><?php endforeach; ?>
+    </table>
+  </div>
+</div><?php page_footer(); ?>

@@ -1,5 +1,54 @@
 <?php
-require_once __DIR__.'/../includes/functions.php';require_role('admin');
-if(isset($_GET['delete'])){try{$q=$pdo->prepare('DELETE FROM strands WHERE strand_id=?');$q->execute([(int)$_GET['delete']]);$_SESSION['flash']='Strand deleted.';}catch(PDOException $e){$_SESSION['flash']='Cannot delete a strand currently in use.';}header('Location: strands.php');exit;}
-if($_SERVER['REQUEST_METHOD']==='POST'){try{$q=$pdo->prepare('INSERT INTO strands(strand_code,strand_name) VALUES(?,?)');$q->execute([strtoupper(trim($_POST['strand_code'])),trim($_POST['strand_name'])]);$_SESSION['flash']='Strand added.';}catch(PDOException $e){$_SESSION['flash']='Strand code already exists or is invalid.';}header('Location: strands.php');exit;}
-$rows=$pdo->query('SELECT * FROM strands ORDER BY strand_code')->fetchAll();page_header('Strands');notice();?><div class="page-heading"><h1>Strands</h1></div><div class="panel"><form method="post" class="form-grid"><label>Strand Code<input name="strand_code" placeholder="STEM" required></label><label>Strand Name<input name="strand_name" required></label><button class="btn">Add strand</button></form></div><div class="panel"><div class="table-wrap"><table><tr><th>Code</th><th>Strand</th><th>Action</th></tr><?php foreach($rows as $r):?><tr><td><?=e($r['strand_code'])?></td><td><?=e($r['strand_name'])?></td><td><a class="danger" data-confirm="Delete this strand?" href="?delete=<?=$r['strand_id']?>">Delete</a></td></tr><?php endforeach;?></table></div></div><?php page_footer();?>
+/** Manages academic and technical-vocational strands. */
+require_once __DIR__ . '/../includes/functions.php';
+require_role('admin');
+if (isset($_GET['delete'])) {
+    try {
+        $q = $pdo->prepare('DELETE FROM strands WHERE strand_id=?');
+        $q->execute([(int) $_GET['delete']]);
+        $_SESSION['flash'] = 'Strand deleted.';
+    } catch (PDOException $e) {
+        $_SESSION['flash'] = 'Cannot delete a strand currently in use.';
+    }
+    header('Location: strands.php');
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $q = $pdo->prepare('INSERT INTO strands(strand_code,strand_name) VALUES(?,?)');
+        $q->execute([strtoupper(trim($_POST['strand_code'])), trim($_POST['strand_name'])]);
+        $_SESSION['flash'] = 'Strand added.';
+    } catch (PDOException $e) {
+        $_SESSION['flash'] = 'Strand code already exists or is invalid.';
+    }
+    header('Location: strands.php');
+    exit;
+}
+$rows = $pdo->query('SELECT * FROM strands ORDER BY strand_code')->fetchAll();
+page_header('Strands');
+notice(); ?>
+<div class="page-heading">
+    <h1>Strands</h1>
+</div>
+<div class="panel">
+    <form method="post" class="form-grid"><label>Strand Code<input name="strand_code" placeholder="STEM"
+                required></label><label>Strand Name<input name="strand_name" required></label><button class="btn">Add
+            strand</button></form>
+</div>
+<div class="panel">
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Code</th>
+                <th>Strand</th>
+                <th>Action</th>
+            </tr><?php foreach ($rows as $r): ?>
+                <tr>
+                    <td><?= e($r['strand_code']) ?></td>
+                    <td><?= e($r['strand_name']) ?></td>
+                    <td><a class="danger" data-confirm="Delete this strand?" href="?delete=<?= $r['strand_id'] ?>">Delete</a>
+                    </td>
+                </tr><?php endforeach; ?>
+        </table>
+    </div>
+</div><?php page_footer(); ?>
